@@ -1,0 +1,16 @@
+# scope.txt
+# Programa: Airbnb Security Bug Bounty (HackerOne)
+# Consultado: 2026-10-28
+# Activo seleccionado: *.airbnb.com
+
+*.airbnb.com
+
+# Fuera de alcance (no se toca):
+!provider.demo.urbandoor.com
+!demo.urbandoor.com
+!admin.demo.urbandoor.com
+!luckeyhomes.com
+!luckey.partners
+!luckey.in
+!luckey.fr
+!luckey.app
