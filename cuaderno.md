@@ -317,13 +317,25 @@ site:airbnb.com "@airbnb.com"
 
 Consulta de Hunter.io:
 
+**Consulta de Hunter.io:**
+
+En Hunter.io realicé una búsqueda del dominio `airbnb.com` mediante la herramienta *Domain Search*. La plataforma mostró **4.814 resultados asociados al dominio**, incluyendo 4.533 perfiles de personas y 421 perfiles clasificados como responsables de decisiones (*Decision makers*).
+
+Además, permite organizar los resultados por departamentos, como IT/Engineering, Management, Finance, Sales, Legal y Support, facilitando la identificación de personas relacionadas con diferentes áreas de la organización.
+
+La herramienta también dió información corporativa de Airbnb, como su sector de actividad, tamaño aproximado y ubicación. Durante la consulta, revelé y guardé un perfil en la sección Leads.
+
+Estos resultados permiten conocer mejor la estructura organizativa de la empresa y localizar posibles puntos de contacto. No obstante, los perfiles encontrados no implican que todas las direcciones de correo estén verificadas o activas.
+
+![Resultados de Google y Hunter.io](./img/hunterio.png)
+![Resultados de Google y Hunter.io](./img/hunter.png)
+
 https://hunter.io/search/airbnb.com
 
 **Qué salió:**
 
 - `theHarvester` no devolvió direcciones de correo electrónico ni direcciones IP en las consultas realizadas.
-- Hunter.io mostró información sobre la empresa y direcciones de correo asociadas al dominio. No pude confirmar que todas las direcciones fueran válidas o estuvieran activas.
-- La búsqueda de Google mostró los resultados recogidos en la captura.
+- Hunter.io mostró información sobre la empresa y direcciones de correo asociadas al dominio.
 
 **Evidencias:**
 
