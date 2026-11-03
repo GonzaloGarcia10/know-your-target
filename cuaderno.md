@@ -329,6 +329,7 @@ Estos resultados permiten conocer mejor la estructura organizativa de la empresa
 
 ![Resultados de Google y Hunter.io](./img/hunterio.png)
 ![Resultados de Google y Hunter.io](./img/hunter.png)
+![Resultados de Google y Hunter.io](./img/hunter-datos.png)
 
 https://hunter.io/search/airbnb.com
 
