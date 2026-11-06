@@ -345,3 +345,205 @@ https://hunter.io/search/airbnb.com
 ![Resultado de theHarvester](./img/harvester.png)
 
 **Siguiente paso:** Consolidar los resultados verificados en el mapa de reconocimiento y comprobar que los activos incluidos estén dentro del alcance autorizado.
+
+# Parte 2 · First Agent
+
+## 2.1 Comprueba tu alcance
+
+Aqui añadimos el scope mismo que pusimos en scope.txt, como podemos observar definimos el dominio, in scope y out of scope.
+
+![scope](./img/scope.png)
+
+Aqui podemos ver que mi programa autoriza airbnb.es, *airbnb.com y excluye:
+!provider.demo.urbandoor.com
+!demo.urbandoor.com
+!admin.demo.urbandoor.com
+!luckeyhomes.com
+!luckey.partners
+!luckey.in
+!luckey.fr
+!luckey.app
+
+![scope2](./img/scope2.png)
+
+## 2.2 Dale herramientas
+
+Usé todas estas herramientas importandolo y añadiendolo a la lista de este archivo, el lanzar.py:
+
+![herramientas](./img/herramientas.png)
+![herramientas2](./img/herramientas2.png)
+
+Las cuales puse el trozo de código de cada una en el directorio herramientas y dentro en el archivo tus_herramientas
+
+## 2.3 Mira cómo se construye su prompt
+
+### 1. Visualización del prompt original
+
+Se ejecutó el siguiente comando desde el directorio `aap-base`:
+
+```bash
+.venv/bin/python lanzar.py --ver-prompt
+```
+![2.3](./img/2.3.png)
+![2.3.1](./img/2.3.1.png)
+
+### 2.3 Comprobación de la modificación del prompt
+
+Para comprobar que el prompt se construye dinámicamente a partir del archivo `scope.txt`, realicé una modificación temporal en dicho archivo.
+
+En primer lugar, añadí un dominio de prueba mediante el siguiente comando:
+
+```bash
+echo "prueba.example.com" >> scope.txt
+```
+
+A continuación, utilicé tail scope.txt para comprobar que la nueva entrada se había añadido correctamente.
+
+Después, volví a generar el prompt del sistema y guardé el resultado en un archivo diferente:
+
+```bash
+python lanzar.py --ver-prompt > /tmp/prompt_modificado.txt
+```
+
+Para comprobar qué había cambiado respecto al prompt original, ejecuté:
+
+```bash
+diff -u /tmp/prompt_original.txt /tmp/prompt_modificado.txt
+```
+
+Al comparar ambos archivos, observé que el dominio prueba.example.com aparecía añadido en la sección de objetivos autorizados del prompt.
+
+La diferencia mostrada fue la siguiente:
+-Autorizado: airbnb.es, *.airbnb.com
++Autorizado: airbnb.es, *.airbnb.com, prueba.example.com
+
+Esto demuestra que el prompt no contiene una lista de dominios fija, sino que obtiene la información del archivo scope.txt cada vez que se genera.
+
+Por tanto, cualquier modificación realizada en el alcance se refleja automáticamente en las instrucciones que recibe el modelo, sin necesidad de modificar manualmente instrucciones.md ni lanzar.py
+
+![2.3.1](./img/comprobacion.png)
+
+## 2.4 Lánzalo contra tu objetivo
+
+Una vez comprobado el funcionamiento del prompt y restaurado el alcance original, ejecuté el agente contra el dominio autorizado `airbnb.es`.
+
+### 2.4.1. Ejecución del agente
+
+Ejecuté el siguiente comando desde el directorio principal del proyecto:
+
+```bash
+.venv/bin/python lanzar.py "Haz un reconocimiento pasivo completo de airbnb.es. Termina con un informe."
+```
+
+### 2.4.2. Traza de ejecución
+
+La ejecución quedó registrada en el archivo:
+
+`salida/traza.jsonl`
+
+La traza contiene un total de **21 eventos**:
+
+- 1 evento de inicio (`inicio`).
+- 19 eventos correspondientes a llamadas a herramientas (`herramienta`).
+- 1 evento de finalización (`fin`), que contiene el informe generado y los datos de consumo.
+
+Para consultar la traza utilicé:
+
+```bash
+cat salida/traza.jsonl
+```
+
+### 2.4.3. Resultados del reconocimiento
+
+Durante el reconocimiento se obtuvieron los siguientes resultados:
+
+**1. Registro del dominio y DNS**
+
+La consulta WHOIS no proporcionó información. La herramienta indicó que no obtuvo respuesta WHOIS y que RDAP tampoco respondió para el dominio `.es`.
+
+Las consultas DNS permitieron ver dos direcciones IPv4:
+
+- `166.117.189.176`
+- `166.117.27.62`
+
+También se obtuvieron registros NS asociados a AWS y NS1, registros TXT y un registro SOA.
+
+Herramientas utilizadas: `whois_dominio` y `dns_registros`.
+
+**2. Descubrimiento de subdominios**
+
+Subfinder encontró 0 subdominios dentro del alcance y filtró 7 resultados por encontrarse fuera de él.
+
+Utilicé: `subdominios_crtsh` y `subdominios_subfinder`.
+
+**3. Infraestructura**
+
+Shodan InternetDB proporcionó información sobre las dos direcciones IP identificadas.
+
+Ambas presentaban los puertos 80 y 443 y la etiqueta `cloud`. También aparecían referencias a infraestructura de AWS Global Accelerator.
+
+No se mostraron vulnerabilidades conocidas en los resultados de InternetDB.
+
+Herramienta utilizada: `shodan_internetdb`.
+
+**4. Archivos de seguridad**
+
+Se encontraron los archivos `robots.txt` y `security.txt`.
+
+El archivo `robots.txt` contenía diferentes directivas para Googlebot y Bingbot, incluyendo restricciones sobre rutas de cuentas, reservas, API y gestión de alojamientos.
+
+El archivo `security.txt` contenía referencias a la política de seguridad de Airbnb en HackerOne y una fecha de expiración del 1 de junio de 2027.
+
+Herramientas utilizadas: `robots_txt` y `security_txt`.
+
+**5. Postura del correo electrónico**
+
+Se identificaron los siguientes registros:
+
+- SPF: `v=spf1 -all`.
+- DMARC: política `p=reject`.
+- MTA-STS: sin registros encontrados.
+- CAA: autorización de certificados para `digicert.com`.
+- MX: sin registros encontrados.
+
+Herramienta utilizada: `correo_postura`.
+
+### 2.4.4. Informe generado
+
+El agente generó un informe final en Markdown que quedó incluido en el evento `fin` de la traza.
+
+El informe recoge los resultados de las diferentes herramientas y señala la procedencia de los datos mediante sus nombres.
+
+Entre las conclusiones generadas se encuentran la identificación de infraestructura cloud, la configuración de los registros DNS y la postura de seguridad del correo electrónico.
+
+### 2.4.5. Consumo de tokens y coste
+
+Los datos de consumo proporcionados por el agente al finalizar la ejecución fueron los siguientes:
+
+| Métrica | Resultado |
+|---|---:|
+| Tokens de entrada | 15.122 |
+| Tokens de salida | 3.776 |
+| Total de tokens | 18.898 |
+| Tiempo | 2 minutos y 12 segundos |
+
+El programa enseña el consumo de tokens, pero no dió información sobre el coste de la ejecución.
+
+### 2.4.6. Incidencias 
+
+Durante el reconocimiento se produjeron algunas incidencias:
+
+1. **WHOIS:** no se pudo obtener información pública del dominio.
+2. **crt.sh:** devolvió un error HTTP 502, por lo que no se pudieron obtener resultados.
+3. **Hunter.io:** no pudo ejecutarse porque faltaba configurar la API Key.
+4. **Subfinder:** no encontró subdominios adicionales dentro del alcance.
+5. **Wayback y urlscan:** no encontraron resultados dentro del alcance consultado.
+
+## 2.5 Intenta sacarlo del alcance
+
+Esta parte se explica en pruebas.md
+
+# Parte 3 · Análisis comparativo
+
+Realizada en el fichero comparativa.md
+[Fichero](comparativa.md)
