@@ -14,7 +14,7 @@ La tabla recoge una selección de los resultados documentados en las consultas D
 
 | Dominio o subdominio | IP observada | ¿En alcance? | Función aparente |
 |---|---|---|---|
-| `airbnb.com` | No documentada en el cuaderno | No | Dominio principal de la organización |
+| `airbnb.com` | `166.117.189.176` `166.117.27.62` | No | Dominio principal de la organización |
 | `www.airbnb.com` | `96.16.88.137` | Si | Sitio web público; IP asociada a infraestructura CDN |
 | `api.airbnb.com` | `23.216.132.63` | Si | Posible API del servicio |
 | `callbacks.airbnb.com` | `23.44.111.31` | Si | Posible servicio de callbacks |

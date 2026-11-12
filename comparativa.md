@@ -172,6 +172,6 @@ Antes de dar por válido un informe comprobaría:
 - Que las herramientas que hayan devuelto errores o no hayan podido ejecutarse estén identificadas.
 - Que las direcciones IP compartidas con proveedores externos no se atribuyan automáticamente a la infraestructura propia de Airbnb.
 
-Basicamente considero que un agente de inteligencia artificial es una herramienta útil para automatizar tareas de reconocimiento pasivo, recopilar información y generar informes. 
+Basicamente considero que un agente de inteligencia artificial es una herramienta útil para automatizar tareas de reconocimiento, recopilar información y generar informes. 
 
-Sin embargo, no sustituye la revisión humana. Es necesario contrastar las conclusiones con las evidencias originales antes de utilizarlas en un análisis de seguridad.
+Sin embargo, no sustituye la revisión humana. Es necesario revisar las conclusiones con las evidencias originales antes de utilizarlas en un análisis de seguridad.
