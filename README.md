@@ -12,8 +12,9 @@
 El objetivo elegido para este proyecto es Airbnb, utilizando como referencia su programa público de divulgación de vulnerabilidades en HackerOne.
 
 - **Programa HackerOne:** [Airbnb](https://hackerone.com/airbnb)
-- **Dominio del reconocimiento manual:** `airbnb.com`
-- **Dominio utilizado por el agente:** `airbnb.es`
+- **Alcance seleccionado:** `*.airbnb.com` (subdominios; no incluye el dominio raíz por sí solo).
+- **Dominio del reconocimiento manual:** `airbnb.com` (consultas OSINT pasivas; confirmar su elegibilidad antes de cualquier prueba activa).
+- **Ejecución histórica del agente:** `airbnb.es`. No coincide con el alcance actual de `scope.txt`; se conserva como antecedente, no como prueba dentro del alcance configurado.
 
 El objetivo del proyecto es realizar un reconocimiento pasivo de la superficie de exposición pública de Airbnb, utilizando técnicas OSINT y comparando los resultados manuales con los obtenidos mediante un agente de inteligencia artificial.
 
