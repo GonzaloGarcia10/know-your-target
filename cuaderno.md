@@ -54,7 +54,12 @@ dig +short txt airbnb.com
 
 **Qué salió:**
 
-Se realizaron consultas de correo electrónico (MX), políticas DMARC, servidores de nombres (NS) y registros de texto (TXT).
+- **MX:** cinco destinos de Google Workspace: `aspmx.l.google.com` (prioridad 1), `alt1.aspmx.l.google.com` y `alt2.aspmx.l.google.com` (prioridad 5), `alt3.aspmx.l.google.com` y `alt4.aspmx.l.google.com` (prioridad 10).
+- **DMARC:** `_dmarc.airbnb.com` publica `v=DMARC1; p=reject; sp=reject; pct=100; ruf=mailto:dmarc.forensic@airbnb.com; rua=mailto:dmarc.aggregate@airbnb.com; aspf=r; adkim=r; fo=1; ri=3600`.
+- **NS:** `ns-558.awsdns-05.net`, `ns-474.awsdns-59.com`, `ns-1453.awsdns-53.org`, `ns-1932.awsdns-49.co.uk` y `dns1.p08.nsone.net`–`dns4.p08.nsone.net`.
+- **TXT:** se ven verificaciones de EcoStruxure, Google, Anthropic, Segment, Microsoft, Stripe, Apple, Okta y otros servicios. La política SPF comienza `v=spf1 include:spf1.airbnb.com`, autoriza varios rangos IPv4/IPv6 y termina en `-all`.
+
+Los valores están transcritos de las capturas adjuntas; las cadenas de verificación completas se conservan en `dig-txt.png` para evitar recopiarlas con posibles errores.
 
 **Evidencias:**
 
@@ -88,7 +93,7 @@ Consulté el dominio `airbnb.com` en DNSDumpster para recopilar información de 
 
 **Qué salió:**
 
-DNSDumpster indicó 178 registros encontrados, de los cuales mostró 50 en la versión gratuita. Se identificaron subdominios asociados a direcciones IP y proveedores como Akamai, AWS y Google Cloud. También aparecieron registros MX relacionados con Google y registros TXT con información de verificación de dominios y configuración SPF.
+DNSDumpster indicó **178 registros** y mostró **50** en la vista gratuita. Las capturas documentan, entre otros, `api.airbnb.com` (`23.216.132.63`), `callbacks.airbnb.com` (`23.44.111.31`), `admin-staging.airbnb.com` y `admin-lite-staging.airbnb.com` (ambos `34.120.23.133`), `community-staging.airbnb.com` (`13.248.132.14`), `email.airbnb.com` (`3.20.87.51`), `o10.email.airbnb.com` (`167.89.35.182`) y `o11.email.airbnb.com` (`50.31.32.157`). Las etiquetas visibles asocian direcciones con Akamai, AWS, Google Cloud y SendGrid. Los MX mostrados corresponden a Google; los TXT incluyen verificaciones de servicios y SPF. Las IP y etiquetas son las que reportó DNSDumpster en esa consulta, no una atribución de propiedad exclusiva.
 
 **Evidencias:**
 
@@ -116,9 +121,7 @@ subfinder -d airbnb.com -silent
 
 **Qué salió:**
 
-La herramienta devolvió una lista de subdominios obtenidos de fuentes públicas. En las capturas se muestran los resultados identificados, incluidos nombres relacionados con distintos entornos y servicios.
-
-No se realizó un escaneo activo de los sistemas encontrados.
+Las dos capturas muestran más de 40 nombres. Entre los resultados concretos aparecen `api.airbnb.com`, `api.preprod.airbnb.com`, `api.akamai-ci.airbnb.com`, `admin-staging.airbnb.com`, `community-staging.airbnb.com`, `prototype-internal.airbnb.com`, `dr.staging.airbnb.com`, `o10.email.airbnb.com`, `o12.email.airbnb.com`, `careers.next.airbnb.com` y `investors.airbnb.com`. También aparecen dominios regionales como `de.airbnb.com`, `fr.airbnb.com` y `es.airbnb.com`. Subfinder aporta nombres; las capturas no muestran una resolución de IP para cada nombre. No se realizó un escaneo activo de los sistemas encontrados.
 
 **Evidencias:**
 
@@ -145,7 +148,14 @@ Revisé los apartados disponibles del informe sin realizar pruebas intrusivas co
 
 **Qué salió:**
 
-Netcraft mostró información sobre la huella tecnológica y la infraestructura web del dominio. Las capturas adjuntas documentan los apartados revisados.
+El informe de Netcraft mostraba estos datos para `airbnb.com` en el momento de la captura:
+
+- **Red y alojamiento:** netblock owner `Amazon.com, Inc.`, hosting company `Amazon`, país de hosting `US`; IPv4 `166.117.189.176`, ASN `AS16509`; reverse DNS `a333dda39e3b496ea.awsglobalaccelerator.com`.
+- **DNS y registro:** nameserver `dns1.p02.nsone.net`, registrador `markmonitor.com`, organización `Airbnb, Inc., United States`; DNS Security Extensions figura como `Enabled`.
+- **TLS:** certificado con nombre común `airbnb.com`, validación de organización, emisor DigiCert Inc. y negociación de protocolo de aplicación `h2`; la captura indica Perfect Forward Secrecy: `Yes`.
+- **Contexto del sitio:** título “Airbnb: Holiday Rentals, Cabins, Beach Houses, Unique Homes & Experiences”, idioma principal inglés y primera observación en marzo de 2009.
+
+Estos son campos del reporte de Netcraft, no pruebas independientes de configuración actual ni de propiedad exclusiva de la IP.
 
 **Evidencias:**
 
@@ -174,14 +184,7 @@ https://www.airbnb.com/robots.txt
 
 **Qué salió:**
 
-El fichero contiene directrices para los rastreadores web. Entre las rutas que aparecen en las directivas `Disallow` se encuentran:
-
-- Autenticación y cuentas: `/account`, `/login_with_redirect`, `/forget_password`.
-- Gestión: `/home/dashboard`, `/manage-listing`, `/my_listings`.
-- Transacciones: `/payments/book`, `/reservation`, `/checkout`.
-- Otras rutas: `/api/v1/trebuchet` y `/messaging/ajax_already_messaged/`.
-
-También aparece una directiva `Allow` para `/.well-known/apple-app-site-association`.
+Entre las directivas observadas están `Disallow: /account`, `/login_with_redirect`, `/forgot_password`, `/home/dashboard`, `/manage-listing`, `/my_listings`, `/payments/book`, `/reservation`, `/api/v1/trebuchet` y `/messaging/ajax_already_messaged/`. También aparece una directiva `Allow` para `/.well-known/apple-app-site-association`. Son instrucciones para rastreadores, no controles de acceso ni indicios de vulnerabilidad.
 
 Estas directivas indican a los rastreadores qué rutas deben evitar o pueden rastrear. No demuestran por sí mismas que las rutas sean vulnerables ni que estén protegidas frente al acceso directo.
 
@@ -212,7 +215,7 @@ Antes de considerar `airbnb.es` parte del objetivo auditado, debo comprobar si e
 
 **Qué salió:**
 
-El recurso consultado enlazaba con información sobre el programa de recompensas por errores (*Bug Bounty*) de Airbnb en HackerOne, sus condiciones y otros recursos relacionados con la seguridad. También mostraba una fecha de expiración indicada para junio de 2027.
+La captura del `security.txt` muestra `Contact: https://hackerone.com/airbnb/`, `Policy: https://hackerone.com/airbnb#overview`, `Preferred-Languages: en`, un `Canonical` bajo `www.airbnb.com` y `Expires: 2027-06-01T04:59:00.000Z`. La consulta se hizo desde `airbnb.es`; ese host no debe tratarse como autorizado por el scope actual (que solo contiene `*.airbnb.com`). El fichero sirve como referencia al canal de reporte, no amplía por sí mismo el alcance.
 
 **Evidencia:**
 
@@ -280,9 +283,9 @@ El operador `site:` restringe los resultados al dominio indicado y `filetype:` p
 
 **Qué salió:**
 
-- La consulta de PDF mostró los resultados recogidos en la captura.
-- La consulta de DOCX no devolvió resultados relevantes para esta actividad.
-- La búsqueda relacionada con seguridad mostró los resultados documentados en la captura.
+- La captura de PDF muestra resultados indexados bajo `airbnb.com`; es una búsqueda de páginas/documentos y no una comprobación de exposición o acceso. No transcribo títulos que no se distinguen con suficiente claridad en la evidencia guardada.
+- La consulta de DOCX no devolvió resultados relevantes.
+- La búsqueda `site:airbnb.com security` muestra páginas de seguridad de Airbnb, incluida la referencia al programa de reporte. No se documentó ningún documento sensible ni panel expuesto en las capturas.
 
 **Evidencias:**
 
@@ -319,7 +322,7 @@ Consulta de Hunter.io:
 
 **Consulta de Hunter.io:**
 
-En Hunter.io realicé una búsqueda del dominio `airbnb.com` mediante la herramienta *Domain Search*. La plataforma mostró **4.814 resultados asociados al dominio**, incluyendo 4.533 perfiles de personas y 421 perfiles clasificados como responsables de decisiones (*Decision makers*).
+En Hunter.io realicé una búsqueda del dominio `airbnb.com` mediante la herramienta *Domain Search*. La interfaz/captura indica **4.814 resultados asociados al dominio**, incluyendo 4.533 perfiles de personas y 421 perfiles clasificados como responsables de decisiones (*Decision makers*). Son contadores de la plataforma; no equivalen a direcciones verificadas ni a contactos apropiados para esta actividad.
 
 Además, permite organizar los resultados por departamentos, como IT/Engineering, Management, Finance, Sales, Legal y Support, facilitando la identificación de personas relacionadas con diferentes áreas de la organización.
 
@@ -335,8 +338,9 @@ https://hunter.io/search/airbnb.com
 
 **Qué salió:**
 
-- `theHarvester` no devolvió direcciones de correo electrónico ni direcciones IP en las consultas realizadas.
-- Hunter.io mostró información sobre la empresa y direcciones de correo asociadas al dominio.
+- `theHarvester` no devolvió direcciones de correo electrónico ni direcciones IP en las consultas realizadas (captura `harvester.png`).
+- Hunter.io mostró los contadores indicados arriba y perfiles asociados al dominio; la evidencia no permite afirmar un patrón de correo corporativo verificado.
+- La búsqueda de Google fue `site:airbnb.com "@airbnb.com"`; sus resultados se conservan en `correo-alternativa.png`. No se usó para contactar a nadie.
 
 **Evidencias:**
 

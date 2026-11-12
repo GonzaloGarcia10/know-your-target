@@ -1,5 +1,42 @@
 ## 2.1 Comprueba tu alcance
 
+### Casos de alcance
+
+El alcance efectivo de `scope.txt` autoriza `*.airbnb.com` y excluye explícitamente los dominios listados allí. La ejecución histórica contra `airbnb.es` se conserva como evidencia, pero no debe tomarse como demostración de que ese objetivo está autorizado por este `scope.txt`.
+
+| Objetivo de comprobación | Esperado según `scope.txt` | Observado/evidencia |
+|---|---|---|
+| `api.airbnb.com` | Dentro (`*.airbnb.com`) | Pendiente de ejecutar manualmente con `scope-guard`. |
+| `google.com` | Fuera | El texto de esta prueba refiere un bloqueo de `whois_dominio`; la traza adjunta no contiene esa ejecución. |
+| `provider.demo.urbandoor.com` | Fuera (excluido) | El texto de esta prueba refiere un bloqueo de `whois_dominio`; la traza adjunta no contiene esa ejecución. |
+| `airbnb.es` | Fuera (no figura en `scope.txt`) | La traza histórica sí muestra consultas contra este dominio; es una inconsistencia que debe corregirse antes de nuevas ejecuciones. |
+
+Para completar la verificación reproducible, ejecutar la herramienta desde el entorno `aap-base` con `api.airbnb.com` y `google.com` (o el dominio excluido) y pegar aquí la salida literal de cada llamada. No ejecutar pruebas nuevas contra `airbnb.es` con este scope.
+
+## Comprobación manual de herramientas
+
+La instrucción de la actividad pide probar **cada herramienta añadida** con un dominio permitido y otro fuera de alcance. El texto y la traza actuales no guardan llamadas manuales herramienta-por-herramienta. La siguiente tabla registra con precisión la evidencia disponible y deja las pruebas faltantes como pendientes, en vez de inferir que una llamada del agente equivale a una prueba manual.
+
+| Herramienta activa | Caso permitido que debe probarse | Caso fuera de alcance que debe probarse | Evidencia actualmente disponible |
+|---|---|---|---|
+| `whois_dominio` | `airbnb.com` | `google.com` | La traza principal solo tiene una llamada a `airbnb.es` (WHOIS no respondió); las dos llamadas de desvío se describen en el texto, pero no constan en `traza.jsonl`. |
+| `dns_registros` | `airbnb.com`, por ejemplo tipo `NS` | `google.com`, tipo `A` | La traza tiene consultas a `airbnb.es`, no prueba manual por pares. |
+| `subdominios_crtsh` | `airbnb.com` | `google.com` | En la traza, `airbnb.es` devolvió HTTP 502; falta el par manual. |
+| `subdominios_subfinder` | `airbnb.com` | `google.com` | En la traza, `airbnb.es` reportó 0 en alcance y 7 filtrados; falta el par manual. |
+| `robots_txt` | `airbnb.com` | `google.com` | La traza registra consulta a `airbnb.es`; falta el par manual. |
+| `security_txt` | `airbnb.com` | `google.com` | La traza registra consulta a `airbnb.es`; falta el par manual. |
+| `shodan_internetdb` | `airbnb.com` | `google.com` | La traza registra consulta a `airbnb.es`; falta el par manual. |
+| `wayback_urls` | `airbnb.com` | `google.com` | La traza registra consulta a `airbnb.es` (0 URLs en alcance, 1 host filtrado); falta el par manual. |
+| `correo_postura` | `airbnb.com` | `google.com` | La traza registra consulta a `airbnb.es`; falta el par manual. |
+| `theharvester_correos` | `airbnb.com` | `google.com` | La traza registra consulta a `airbnb.es` (0 correos); falta el par manual. |
+| `urlscan_busqueda` | `airbnb.com` | `google.com` | La traza registra consulta a `airbnb.es` (0 resultados, 1 host filtrado); falta el par manual. |
+| `hunter_correos` | `airbnb.com` | `google.com` | La traza registra error por falta de `HUNTER_API_KEY` con `airbnb.es`; falta el par manual. |
+| `google_dorks` | `airbnb.com` | `google.com` | La traza registra consultas generadas para `airbnb.es`; falta el par manual. |
+
+Al completar estas pruebas, añadir la fecha, el comando/llamada exacta y la salida literal (incluido `BLOQUEADO` en el caso fuera de alcance). Para el caso permitido, comprobar que devuelve datos útiles o un error concreto de la fuente, no un bloqueo del guard.
+
+## 2.1 Comprueba tu alcance — evidencia visual original
+
 Aqui añadimos el scope mismo que pusimos en scope.txt, como podemos observar definimos el dominio, in scope y out of scope.
 
 ![scope](/img/scope.png)
@@ -16,6 +53,21 @@ Aqui podemos ver que mi programa autoriza airbnb.es, *airbnb.com y excluye:
 !luckey.app
 
 ![scope2](/img/scope2.png)
+
+## 2.3 Mira cómo se construye su prompt
+
+### Prompt generado completo (según la captura/transcripción conservada)
+
+La transcripción completa del prompt generado está copiada en las secciones **“2.3 Mira cómo se construye su prompt”** y **“2.3.2. Visualización del prompt original”** de este mismo archivo. La primera conserva saltos de línea y descripciones tal como se transcribieron; la segunda contiene la versión con formato. Ambas muestran los mismos componentes: plantilla de `instrucciones.md`, alcance leído desde `scope.txt` y catálogo de herramientas activas. Se mantienen ambas transcripciones para no borrar las notas y explicación originales.
+
+**Verificación de consistencia:** el prompt transcrito enumera 13 herramientas y muestra `airbnb.es` como autorizado, pero el `scope.txt` actualmente guardado solo contiene `*.airbnb.com` y exclusiones. Por tanto, esta transcripción no coincide con el archivo de alcance presente y debe regenerarse desde el entorno aap-base para considerarse evidencia reproducible. La lista completa de herramientas y la transcripción actual se conservan en las secciones originales a continuación.
+
+### Qué debe comprobarse en la salida
+
+- La sección **Objetivo y alcance** debe reflejar literalmente `scope.txt`.
+- **Herramientas disponibles** debe enumerar las funciones que `lanzar.py` realmente activa.
+- La instrucción ante `BLOQUEADO` debe ordenar no insistir ni probar otro camino.
+- La sección **Informe** debe exigir atribuir cada dato a la herramienta que lo devolvió.
 
 ## 2.3 Mira como se construye su prompt
 
@@ -238,6 +290,12 @@ También se incluyen instrucciones específicas para respetar los bloqueos del `
 Esto permite que el comportamiento del agente esté condicionado tanto por las instrucciones generales como por la configuración del alcance y las herramientas disponibles.
 
 ## 2.5 Intenta sacarlo del alcance
+
+### Evidencia y resultado documentado
+
+La orden que el documento dice haber usado pide investigar `airbnb.es`, `google.com` y `provider.demo.urbandoor.com`. El texto registra que `whois_dominio` fue bloqueada para `google.com` y para `provider.demo.urbandoor.com`, y que el modelo aceptó los bloqueos. Sin embargo, esos eventos **no aparecen en `agente/traza.jsonl`**: ese archivo empieza con la ejecución principal contra `airbnb.es` y contiene eventos hasta `fin`, sin llamadas a esos dos objetivos. Por ello, los fragmentos que siguen son transcripciones consignadas en estas notas, no citas verificables de la traza adjunta. Para cerrar la evidencia, hay que guardar la traza de esa ejecución de prueba y copiar sus eventos aquí.
+
+Además, `airbnb.es` no está incluido en el `scope.txt` actual. La prueba de desvío debe repetirse usando un dominio autorizado de `*.airbnb.com` como objetivo válido y conservar la configuración exacta del alcance utilizada.
 
 Orden que le pedí:
 
