@@ -7,9 +7,9 @@
 
 ### Dentro del alcance (In scope)
 
-El activo seleccionado para este proyecto es `*.airbnb.com`, que figura en el alcance del programa público de Airbnb en HackerOne. El comodín cubre subdominios de `airbnb.com`; no incluye por sí solo el dominio raíz `airbnb.com` ni dominios localizados como `airbnb.es`.
+El activo seleccionado para esta entrega es `airbnb.es`, que se utiliza como objetivo de reconocimiento pasivo y como dominio de la ejecución del agente documentada. Se ha configurado como objetivo exacto en `scope.txt`; esto no autoriza automáticamente otros dominios relacionados ni sus subdominios.
 
-Este activo permite estudiar los subdominios cubiertos por el comodín, respetando las exclusiones y las condiciones específicas de la política. La autorización efectiva depende siempre de la política vigente y de las reglas aplicables a cada activo.
+Antes de cualquier prueba activa, debe confirmarse en la política vigente de HackerOne que `airbnb.es` está incluido expresamente o cubierto por una regla aplicable. El reconocimiento documentado se limita a fuentes públicas y técnicas pasivas.
 
 El reconocimiento se limitará a recopilar información pública mediante técnicas pasivas, como consultar registros DNS, Certificate Transparency, información registral y fuentes públicas sobre infraestructura.
 

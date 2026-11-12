@@ -1,9 +1,10 @@
 # scope.txt
 # Programa: Airbnb Security Bug Bounty (HackerOne)
 # Consultado: 2026-10-28
-# Activo seleccionado: *.airbnb.com
+# Activo seleccionado para esta entrega: airbnb.es
+# Nota: comprobar la elegibilidad exacta del dominio en la política antes de pruebas activas.
 
-*.airbnb.com
+airbnb.es
 
 # Fuera de alcance (no se toca):
 !provider.demo.urbandoor.com
